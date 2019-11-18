@@ -19,6 +19,19 @@ export class GroupsComponent implements OnInit {
   showLamps: boolean = false;
   selectedGroup: boolean;
   selectedGroupId: any;
+  // selectedGrpOption = 'groupTransefer';
+  selectedGrpOption = 'groupInfo';
+  info: boolean = true;
+  transfer: boolean = false;
+  selectedFromGrp;
+  selectedToGrp;
+  lampListTransferA = [];
+  lampListTransferB = [];
+  selectedForTransfer = [];
+  selectedImeiForTransfer = [];
+  frmSelect;
+  toSelect;
+  // SelectionType = SelectionType;
   constructor(private dialog: MatDialog, private groupService: GroupService, private lampService: LampService) { }
 
   ngOnInit() {
@@ -33,7 +46,7 @@ export class GroupsComponent implements OnInit {
           name: res.name,
           areaId: res.areaId._id
         }
-        this.groupService.addGroup(data).subscribe((resp: any)=> {
+        this.groupService.addGroup(data).subscribe((resp: any) => {
           Swal.fire({
             type: 'success',
             title: 'Group was added!',
@@ -50,17 +63,18 @@ export class GroupsComponent implements OnInit {
   getAllGroups() {
     this.groupService.getGroups().subscribe((res: any) => {
       this.groupList = res.groups;
+      console.log(this.groupList, 'grplist')
     });
   }
 
   onActivate(event) {
     if (event.type === 'click') {
-      console.log(event);
       this.selectedGroupId = event.row._id;
       this.selectedGroup = event.row.name;
       this.showLamps = false;
       this.enableBtn = false;
       this.recentVoltage = event.row.recentVoltage ? event.row.recentVoltage : 3;
+      this.selectedForTransfer = [...this.selectedForTransfer];
     }
   }
   voltageChange() {
@@ -72,7 +86,7 @@ export class GroupsComponent implements OnInit {
       voltage: this.recentVoltage,
       groupId: this.selectedGroupId
     }
-    this.groupService.setGroupVoltage(data).subscribe( res => {
+    this.groupService.setGroupVoltage(data).subscribe(res => {
       Swal.fire({
         type: 'success',
         title: 'Voltage set successfully!',
@@ -82,11 +96,52 @@ export class GroupsComponent implements OnInit {
   }
 
   showLampList() {
-    console.log(this.selectedGroupId);
     this.showLamps = true;
-    this.lampService.getDeviceByGroupId(this.selectedGroupId).subscribe( (res: any) => {
-        this.lampList = res.devices;
+    this.lampService.getDeviceByGroupId(this.selectedGroupId).subscribe((res: any) => {
+      console.log(res.devices, 'sdkadlsakdlsakdlaskdlsakdlasklsa')
+      this.lampList = res.devices;
     });
     //get lamps as per group ID
   }
+
+  editRow() {
+
+  }
+  selectFromGroup(grp) {
+    this.selectedFromGrp = grp;
+    this.lampService.getDeviceByGroupId(grp._id).subscribe((res: any) => {
+      this.lampListTransferA = res.devices;
+    });
+  }
+  selectToGroup(grp) {
+    this.selectedToGrp = grp;
+    console.log(grp, 'togrp')
+    this.lampService.getDeviceByGroupId(grp._id).subscribe((res: any) => {
+      this.lampListTransferB = res.devices;
+    });
+  }
+
+  transferLamps() {
+    this.selectedForTransfer.forEach((lamp, inedx, arr) => {
+      lamp.groupId = this.selectedToGrp;
+      if (arr.length - 1 === inedx) {
+        // let data = {...this.selectedForTransfer};
+        this.lampService.updateMultipleDevices( this.selectedForTransfer).subscribe((res: any) => {
+          if (res.statusCode == 201) {
+            Swal.fire({
+              type: 'success',
+              title: 'Groups Updated!',
+            })
+            this.selectedForTransfer = [];
+            this.selectedFromGrp = '';
+            this.frmSelect = '';
+            this.toSelect = ''
+            this.lampListTransferA = [];
+          }
+          console.log(res, 'updated');
+        });
+      }
+    });
+  }
 }
+

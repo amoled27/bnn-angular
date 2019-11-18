@@ -3,9 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  // url: 'http://localhost:5000/api', 
+  url: 'http://localhost:5000/api', 
   // url: 'https://bnn-node.herokuapp.com/api',
-  url: 'http://178.128.88.120:5000/api',
+  // url: 'http://178.128.88.120:5000/api',
   production: false
 };
 

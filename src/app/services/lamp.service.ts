@@ -49,4 +49,10 @@ export class LampService {
     headers = this.createAuthorizationHeader(headers);
     return this.http.get(ApplicationUrls.device.deviceByGroupId + '/' + id, { headers: headers }).pipe();
   }
+  updateMultipleDevices(data) {
+    data = JSON.stringify(data);
+    let headers = new HttpHeaders();
+    headers = this.createAuthorizationHeader(headers);
+    return this.http.post(ApplicationUrls.device.updateMultipleDevices, data, { headers: headers }).pipe();
+  }
 }

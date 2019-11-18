@@ -3,6 +3,19 @@
   <div fxFlex="50" class="hdr">
     <h2>Lamp Groups</h2>
   </div>
+  <div fxFlex="45 end" class="hdr" style="text-align: end;">
+
+    <mat-form-field>
+      <mat-label>Select an option</mat-label>
+      <mat-select [(value)]="selectedGrpOption">
+        <mat-option value="groupInfo" (click)="info = true;transfer = false">Group Info</mat-option>
+        <mat-option value="groupTransfer" (click)="transfer = true; info = false">Group Transfer</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div fxFlex="5">
+
+  </div>
 </div>
 <div fxLayout="row">
 
@@ -14,13 +27,13 @@
 
 </div>
 
-<div fxLayout="row" fxLayoutGap="5px">
+<div fxLayout="row" fxLayoutGap="5px" *ngIf="info">
   <div fxFlex="30">
     <div class="groupsList">
       <h3>Groups</h3>
     </div>
     <ngx-datatable [rows]="groupList" class="material" [columnMode]="'flex'" [headerHeight]="50" [footerHeight]="50"
-      [rowHeight]="'auto'" (activate)="onActivate($event)">
+      [rowHeight]="'auto'" (activate)="onActivate($event)" [limit]="10">
       <ngx-datatable-column name="Group Name" [flexGrow]="1" style="line-height: 36px;">
         <ng-template style="margin-top:8px" let-row="row" ngx-datatable-cell-template>
           {{row?.name}}
@@ -31,14 +44,27 @@
           {{row?.areaId.areaShortName}}
         </ng-template>
       </ngx-datatable-column>
+      <!-- <ngx-datatable-column name="Action" [flexGrow]="1" style="line-height: 36px;">
+        <ng-template style="margin-top:8px" let-row="row" ngx-datatable-cell-template>
+          <a (click) = 'deleteRow(row)'>
+            <i class="material-icons del">
+              delete
+            </i> 
+          </a>
+          <a (click) = 'editRow(row)'>
+            <i class="material-icons del">
+              edit
+            </i> 
+          </a>
+        </ng-template>
+      </ngx-datatable-column> -->
     </ngx-datatable>
   </div>
   <div fxFlex="70">
     <div class="lamps intensity">
       <h3>Group Voltage</h3>
       <div class="intens">
-        <mat-slider thumbLabel tickInterval="1" min="3" max="10" [(ngModel)]="recentVoltage"
-          (change)="voltageChange()">
+        <mat-slider thumbLabel tickInterval="1" min="3" max="10" [(ngModel)]="recentVoltage" (change)="voltageChange()">
         </mat-slider>
         <i class="material-icons" (click)="setVoltage()"
           [ngStyle]="{'background': enableBtn ? '#20a084' : 'rgb(166, 168, 170)'}">
@@ -55,7 +81,7 @@
     </div>
     <div *ngIf="showLamps">
       <ngx-datatable [rows]="lampList" class="material" [columnMode]="'flex'" [headerHeight]="50" [footerHeight]="50"
-        [rowHeight]="'auto'" (activate)="onActivate($event.row)">
+        [rowHeight]="'auto'" (activate)="onActivate($event.row)" [limit]="15">
         <ngx-datatable-column name="BNN ID" [flexGrow]="1" style="line-height: 36px;">
           <ng-template style="margin-top:8px" let-row="row" ngx-datatable-cell-template>
             {{row?.bnnId}}
@@ -83,4 +109,78 @@
     </div>
   </div>
 
+</div>
+
+<div fxLayout="row" fxLayoutGap="5px" *ngIf="transfer">
+  <div fxFlex="35">
+    <mat-form-field class="groupDropDown">
+      <mat-label>From</mat-label>
+      <mat-select  [(ngModel)]="frmSelect">
+        <mat-option (click)="selectFromGroup(grp)" *ngFor="let grp of groupList" [value]="grp.name">{{grp.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div fxFlex="35">
+    <mat-form-field class="groupDropDown">
+      <mat-label>To</mat-label>
+      <mat-select [(ngModel)]="toSelect">
+        <mat-option (click)="selectToGroup(grp)" *ngFor="let grp of groupList" [value]="grp.name">{{grp.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div fxFlex="30">
+      <button mat-button class="btn" (click)="transferLamps()"> Transfer</button>
+  </div>
+
+</div>
+<div fxLayout="row" fxLayoutGap="5px" *ngIf="transfer">
+  <div fxFlex="60" fxLayoutGap="5px">
+      <ngx-datatable [rows]="lampListTransferA" class="material" [columnMode]="'flex'" [headerHeight]="50" [footerHeight]="50"
+      [rowHeight]="'auto'" (activate)="onActivate($event)"  [selected]="selectedForTransfer"
+      [selectionType]="'checkbox'" [limit]="20">
+      <ngx-datatable-column name="IMEI" [flexGrow]="2" style="line-height: 36px;"  [checkboxable]="true" [resizeable] = "true">
+        <ng-template style="margin-top:8px" let-row="row" ngx-datatable-cell-template>
+          {{row?.imei}}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column name="Pole Id" [flexGrow]="1" style="line-height: 36px;" [resizeable] = "true">
+        <ng-template style="margin-top:8px" let-row="row" ngx-datatable-cell-template>
+          {{row?.poleId}}
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Site Name" [flexGrow]="1" style="line-height: 36px;" [resizeable] = "true">
+        <ng-template style="margin-top:8px" let-row="row" ngx-datatable-cell-template>
+          {{row?.siteName}}
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Status" [flexGrow]="1" style="line-height: 36px;" [resizeable] = "true">
+        <ng-template style="margin-top:8px" let-row="row" ngx-datatable-cell-template>
+          <span *ngIf="row?.isDeviceOn" class="on-bulb">ON</span> <span class="off-bulb"
+            *ngIf="!row?.isDeviceOn">OFF</span>
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </div>
+  <div fxFlex="10" style="min-width: 50px">
+
+  </div>
+  <div fxFlex="40" fxLayoutGap="5px">
+    <ngx-datatable [rows]="selectedForTransfer" class="material" [columnMode]="'flex'" [headerHeight]="50" [footerHeight]="50"
+      [rowHeight]="'auto'">
+      <ngx-datatable-column name="IMEI" [flexGrow]="2" style="line-height: 36px;">
+          <ng-template style="margin-top:8px" let-row="row" ngx-datatable-cell-template>
+            {{row?.imei}}
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Pole ID" [flexGrow]="1" style="line-height: 36px;">
+          <ng-template style="margin-top:8px" let-row="row" ngx-datatable-cell-template>
+            {{row?.poleId}}
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+  </div>
 </div>

@@ -8,19 +8,44 @@
 
 </div>
 <div fxLayout="row">
-
   <div fxLayout="row" fxLayoutAlign="start">
     <div fxFlex="30">
       <button mat-button class="btn" (click)="openAddLampDialog()"> Add Lamp</button>
     </div>
   </div>
 
-</div>
-<div fxLayout="row" fxLayoutGap="10px">
 
+</div>
+<!-- <div fxLayout="row">
+  <div fxLayout="row" fxFlex="55">
+    <mat-card fxFlex="100" fxLayoutGap="10px">
+      <mat-form-field color="accent" fxFlex="35">
+        <input matInput type="text" #search placeholder="search" [required]="true" [(ngModel)]="searchValue" />
+      </mat-form-field>
+      <mat-form-field fxFlex="30">
+        <mat-select [(ngModel)]="searchType">
+          <mat-option *ngFor="let items of searchItems" [value]="items.value">
+            {{items.value}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div fxFlex="20">
+        <button mat-button class="btn" (click)="searchItem()"> search</button>
+      </div>
+      <div fxFlex="15">
+        <button mat-button class="btn" (click)="searchItem()">
+          <i class="material-icons">
+            replay
+          </i>
+        </button>
+      </div>
+    </mat-card>
+  </div>
+</div> -->
+<div fxLayout="row" fxLayoutGap="10px">
   <div fxFlex="55">
-    <ngx-datatable [rows]="lampList" class="material" [columnMode]="'flex'" [headerHeight]="50" [footerHeight]="50"
-      [rowHeight]="'auto'" (activate)="onActivate($event)">
+    <ngx-datatable [rows]="tempLampList" class="material" [columnMode]="'flex'" [headerHeight]="50" [footerHeight]="50"
+      [rowHeight]="'auto'" (activate)="onActivate($event)" [limit]="15">
       <ngx-datatable-column name="IMEI" [flexGrow]="1" style="line-height: 36px;">
         <ng-template style="margin-top:8px" let-row="row" ngx-datatable-cell-template>
           {{row?.imei}}
@@ -32,14 +57,14 @@
           {{row?.siteName}}
         </ng-template>
       </ngx-datatable-column>
-      
+
       <ngx-datatable-column name="Pole Id" [flexGrow]="1" style="line-height: 36px;">
         <ng-template style="margin-top:8px" let-row="row" ngx-datatable-cell-template>
           {{row?.poleId}}
         </ng-template>
       </ngx-datatable-column>
 
-      <ngx-datatable-column name="Status" [flexGrow]="1" style="line-height: 36px;">
+      <ngx-datatable-column name="Status" [flexGrow]="0.5" style="line-height: 36px;">
         <ng-template style="margin-top:8px" let-row="row" ngx-datatable-cell-template>
           <span *ngIf="row?.isDeviceOn" class="on-bulb">ON</span> <span class="off-bulb"
             *ngIf="!row?.isDeviceOn">OFF</span>
@@ -47,21 +72,21 @@
       </ngx-datatable-column>
       <ngx-datatable-column name="Action" [flexGrow]="1" style="line-height: 36px;">
         <ng-template style="margin-top:8px" let-row="row" ngx-datatable-cell-template>
-          <a (click) = 'deleteRow(row)'>
+          <a (click)='deleteRow(row)'>
             <i class="material-icons del">
               delete
-            </i> 
+            </i>
           </a>
-          <a (click) = 'editRow(row)'>
+          <a (click)='editRow(row)'>
             <i class="material-icons del">
               edit
-            </i> 
+            </i>
           </a>
         </ng-template>
       </ngx-datatable-column>
     </ngx-datatable>
   </div>
-  <div fxFlex="45" *ngIf="lampList.length && currentRow">
+  <div fxFlex="45" *ngIf="tempLampList.length && currentRow">
     <mat-card style="margin-bottom: 12px;">
       <div fxLayout="row" fxLayoutAlign="end">
         <div fxFlex="80">
@@ -84,7 +109,7 @@
         <div fxFlex="70">
           <div fxLayout="row" class="mt-p3">
             <div fxFlex="50">
-              <strong>Name:</strong> {{currentRow?.name}} 
+              <strong>Name:</strong> {{currentRow?.name}}
             </div>
             <div fxFlex="50">
             </div>
@@ -127,7 +152,7 @@
           </div>
         </div>
       </div>
-      
+
     </mat-card>
     <mat-card class="intensity">
       <div fxLayout="row">
@@ -135,10 +160,12 @@
           <strong>Intensity :</strong>
         </div>
         <div fxFlex="50">
-          <mat-slider thumbLabel tickInterval="1" min="3" max="10" [(ngModel)]="currentVoltage" (change)="voltageChange()">
+          <mat-slider thumbLabel tickInterval="1" min="3" max="10" [(ngModel)]="currentVoltage"
+            (change)="voltageChange()">
           </mat-slider>
           <!-- <button mat-button class="btn" (click)="setVoltage()"> Submit</button> -->
-          <i class="material-icons" (click)="setVoltage()"  [ngStyle]="{'background': enableBtn ? '#20a084' : 'rgb(166, 168, 170)'}">
+          <i class="material-icons" (click)="setVoltage()"
+            [ngStyle]="{'background': enableBtn ? '#20a084' : 'rgb(166, 168, 170)'}">
             done
           </i>
         </div>

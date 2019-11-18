@@ -21,11 +21,17 @@ export class LampComponent implements OnInit {
   enableBtn: boolean = false;
   currentDeviceName: any;
   currentRow: any;
+  searchItems = [];
+  searchType = 'imei';
+  searchValue = '';
+  unAlteredLampList = [];
+  tempLampList = [];
   constructor(public dialog: MatDialog, private lampService: LampService) {
   }
 
   ngOnInit() {
     this.getLampList();
+    this.searchItems = [{ value: 'imei' }, { value: 'poleid' },]
   }
 
   onActivate(e) {
@@ -61,6 +67,8 @@ export class LampComponent implements OnInit {
           }
           this.lampList.push(resp.device);
           this.lampList = [...this.lampList];
+          this.tempLampList = this.lampList;
+          // unAlteredLampList.push    
         });
       }
     });
@@ -69,6 +77,7 @@ export class LampComponent implements OnInit {
   getLampList() {
     this.lampService.getAllDevices().subscribe((response: any) => {
       this.lampList = response.device;
+      this.tempLampList = this.lampList;
       console.log(response.device);
       this.onActivate(this.lampList[0]);
     });
@@ -98,13 +107,15 @@ export class LampComponent implements OnInit {
           this.lampList[i].voltage = voltage;
         }
         this.lampList[i].isDeviceOn = toggleStatus ? 1 : 0;
-        this.lampService.updateDevice(imei, this.lampList[i]).subscribe((response: any) => {
+        let data = this.lampList[i];
+        this.lampService.updateDevice(imei, data).subscribe((response: any) => {
           // if (response.status == 201 || response.status == 200) {
           Swal.fire({
             type: 'success',
             title: 'Action successful!'
           });
           this.enableBtn = false;
+          this.tempLampList = [...this.tempLampList];
           // }
         });
       }
@@ -132,10 +143,15 @@ export class LampComponent implements OnInit {
         this.lampService.deleteDevice(delImei).subscribe((res: any) => {
           if (res.status && res.status === 200) {
             let data = this.lampList.map(el => el._id);
+            let tempData = this.tempLampList.map(el => el.id);
             let kindex = data.findIndex(e => { return e === delImei });
+            let tindex = tempData.findIndex(e => { return e === delImei });
             let lamplst = this.lampList;
+            let tLamplst = this.tempLampList;
             lamplst.splice(kindex, 1);
+            // tLamplst.splice(tindex, 1);
             this.lampList = [...lamplst];
+            // this.tempLampList = [...tLamplst];
             Swal.fire(
               'Deleted!'
             )
@@ -149,6 +165,8 @@ export class LampComponent implements OnInit {
       }
     });
   }
+
+
   editRow(row) {
     this.editLampDialog = this.dialog.open(EditLampComponent, {
       data: row
@@ -172,5 +190,36 @@ export class LampComponent implements OnInit {
         });
       }
     })
+  }
+
+  searchItem() {
+    let imeiSearch;
+    let poleIdSearch;
+    // switch (this.searchType) {
+    //   case 'imei': {
+    //     imeiSearch = this.searchValue;
+    //     poleIdSearch = '';
+    //     return false;
+    //   };
+    //   case 'poleid': {
+    //     imeiSearch = '';
+    //     poleIdSearch = this.searchValue;
+    //   }
+    // }
+     this.tempLampList = [];
+
+    let toSearch = this.searchValue;
+
+    for (var i = 0; i < this.lampList.length; i++) {
+      for (let key in this.lampList[i]) {
+        if ( this.lampList[i][key].indexOf(toSearch) != -1) {
+          this.tempLampList.push(this.lampList[i]);
+        }
+      }
+    }
+  }
+
+  resetLampList() {
+
   }
 }

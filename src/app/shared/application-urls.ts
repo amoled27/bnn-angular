@@ -16,7 +16,8 @@ export const ApplicationUrls = {
         singleDevice: envUrlAppends.devices + '/devicedata',
         addDevice: envUrlAppends.devices + '/add-device',
         deleteDevice: envUrlAppends.devices + '/delete-device',
-        deviceByGroupId: envUrlAppends.devices + '/devicebygroup'
+        deviceByGroupId: envUrlAppends.devices + '/devicebygroup',
+        updateMultipleDevices: envUrlAppends.devices + '/updateMultipleDevices'
     },
     area: {
         getAllAreas: envUrlAppends.areas + '/allareas',
