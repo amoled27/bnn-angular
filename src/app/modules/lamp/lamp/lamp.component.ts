@@ -175,13 +175,20 @@ export class LampComponent implements OnInit {
       if (res) {
         let dataEdit = res.formData;
         dataEdit['groupId'] = res.groupId;
-        this.lampService.updateDevice(dataEdit.imei, dataEdit).subscribe((r: any) => {
+        this.lampService.updateDevice(res.imei, dataEdit).subscribe((r: any) => {
           let device = r.device;
           if (device) {
             this.lampList.forEach((resp, count, arr) => {
               if (resp._id === device._id) {
+                console.log(device, 'hhhr');
+
                 this.lampList[count] = device;
-                this.lampList = [...this.lampList];
+                let lampLst = this.lampList;
+                this.lampList = [...lampLst ];
+                // tempLampList = []
+
+                // this.lampList = [...lampLst];
+                console.log(this.lampList, 'áwer');
               }
             })
           }

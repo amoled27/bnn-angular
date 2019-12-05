@@ -17,9 +17,11 @@ export class EditLampComponent implements OnInit {
   groups: any = [];
   selectedGroupId: any;
   lampList;
+  currentImei;
   ngOnInit() {
     this.getGroups();
     this.buildForm();
+    this.currentImei = this.data.imei;
   }
 
   buildForm() {
@@ -74,7 +76,8 @@ export class EditLampComponent implements OnInit {
   saveData() {
     let data = {
       formData : this.form.value,
-      groupId : this.selectedGroupId
+      groupId : this.selectedGroupId,
+      imei: this.currentImei
     }
     this.dialogRef.close(data);
   }

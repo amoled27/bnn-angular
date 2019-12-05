@@ -44,7 +44,7 @@
 </div> -->
 <div fxLayout="row" fxLayoutGap="10px">
   <div fxFlex="55">
-    <ngx-datatable [rows]="tempLampList" class="material" [columnMode]="'flex'" [headerHeight]="50" [footerHeight]="50"
+    <ngx-datatable [rows]="lampList" class="material" [columnMode]="'flex'" [headerHeight]="50" [footerHeight]="50"
       [rowHeight]="'auto'" (activate)="onActivate($event)" [limit]="15">
       <ngx-datatable-column name="IMEI" [flexGrow]="1" style="line-height: 36px;">
         <ng-template style="margin-top:8px" let-row="row" ngx-datatable-cell-template>
